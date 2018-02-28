@@ -13,7 +13,20 @@ Returns: The translation matrix created using x, y and z
 as the translation offsets.
 ====================*/
 struct matrix * make_translate(double x, double y, double z) {
-  return NULL;
+  struct matrix * translate = new_matrix(4,4);
+  int r, c;
+  for ( r = 0 ; r < 4 ; r++ ) {
+    for ( c = 0 ; c < 4 ; c++ ) {
+      if ( r == c ) translate->m[r][c] = 1;
+      else if ( c == 3 ) {
+	if ( r == 0 ) translate->m[r][c] = x;
+	else if ( r == 1 ) translate->m[r][c] = y;
+	else if ( r == 2 ) translate->m[r][c] = z;
+      }
+      else translate->m[r][c] = 0;
+    }
+  }
+  return translate;
 }
 
 /*======== struct matrix * make_scale() ==========
@@ -24,6 +37,17 @@ Returns: The translation matrix creates using x, y and z
 as the scale factors
 ====================*/
 struct matrix * make_scale(double x, double y, double z) {
+  struct matrix * scale = new_matrix(4,4);
+  int r, c;
+  for ( r = 0 ; r < 4 ; r++ ) {
+    for ( c = 0 ; c < 4 ; c++ ) {
+      if ( r == 0 && c == 0 ) scale->m[r][c] = x;
+      else if ( r == 1 && c == 1 ) scale->m[r][c] = y;
+      else if ( r == 2 && c == 2 ) scale->m[r][c] = z;
+      else if ( r == c ) scale->m[r][c] = 1;
+      else scale->m[r][c] = 0;
+    }
+  }
   return NULL;
 }
 
@@ -65,7 +89,6 @@ Returns:
 print the matrix
 */
 void print_matrix(struct matrix *m) {
-
   int r, c;
   for (r=0; r < m->rows; r++) {
     for (c=0; c < m->lastcol; c++) 
