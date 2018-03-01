@@ -48,7 +48,7 @@ struct matrix * make_scale(double x, double y, double z) {
       else scale->m[r][c] = 0;
     }
   }
-  return NULL;
+  return scale;
 }
 
 /*======== struct matrix * make_rotX() ==========
@@ -58,7 +58,15 @@ Returns: The rotation matrix created using theta as the
 angle of rotation and X as the axis of rotation.
 ====================*/
 struct matrix * make_rotX(double theta) {
-  return NULL;
+  struct matrix * rot = new_matrix(4, 4);
+  ident(rot);
+
+  rot->m[1][1] = cos(theta);
+  rot->m[1][2] = -sin(theta);
+  rot->m[2][1] = sin(theta);
+  rot->m[2][2] = cos(theta);
+  
+  return rot;
 }
 
 /*======== struct matrix * make_rotY() ==========
@@ -68,7 +76,15 @@ Returns: The rotation matrix created using theta as the
 angle of rotation and Y as the axis of rotation.
 ====================*/
 struct matrix * make_rotY(double theta) {
-  return NULL;
+  struct matrix * rot = new_matrix(4, 4);
+  ident(rot);
+
+  rot->m[0][0] = cos(theta);
+  rot->m[0][2] = sin(theta);
+  rot->m[2][0] = -sin(theta);
+  rot->m[2][2] = cos(theta);
+  
+  return rot;
 }
 
 /*======== struct matrix * make_rotZ() ==========
@@ -78,7 +94,15 @@ Returns: The rotation matrix created using theta as the
 angle of rotation and Z as the axis of rotation.
 ====================*/
 struct matrix * make_rotZ(double theta) {
-  return NULL;
+  struct matrix * rot = new_matrix(4, 4);
+  ident(rot);
+  
+  rot->m[0][0] = cos(theta);
+  rot->m[1][1] = cos(theta);
+  rot->m[0][1] = -sin(theta);
+  rot->m[1][0] = sin(theta);
+  
+  return rot;
 }
 
 
