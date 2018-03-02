@@ -59,15 +59,66 @@ void parse_file ( char * filename,
 
   FILE *f;
   char line[256];
+  char * s1;
+  char ** args = (char **)calloc(6, sizeof(char *));
+  int i;
   clear_screen(s);
 
-  if ( strcmp(filename, "stdin") == 0 ) 
-    f = stdin;
-  else
-    f = fopen(filename, "r");
+  if ( strcmp(filename, "stdin") == 0 ) f = stdin;
+  else f = fopen(filename, "r");
   
   while ( fgets(line, 255, f) != NULL ) {
     line[strlen(line)-1]='\0';
-    printf(":%s:\n",line);
+    
+    if ( strcmp(line, "line") == 0 ){
+      fgets(line, 255, f);
+      s1 = line;
+      for (i = 0; s1; i ++) {
+	args[i] = strsep(&s1, " ");
+      }      
+      add_edge(edges,
+	       atoi(args[0]), atoi(args[1]), atoi(args[2]),
+	       atoi(args[3]), atoi(args[4]), atoi(args[5]));
+    }
+
+    else if ( strcmp(line, "ident") == 0 ) {
+      ident(transform);
+    }
+
+    else if ( strcmp(line, "scale") ) {
+      fgets(line, 255, f);
+      s1 = line;
+      for (i = 0; s1; i ++) {
+	args[i] = strsep(&s1, " ");
+      }
+      transform = make_scale(atoi(args[0]), atoi(args[1]), atoi(args[2]));
+      matrix_mult(transform, edges);
+    }
+
+    else if ( strcmp(line, "translate") == 0 ){
+      fgets(line, 255, f);
+      s1 = line;
+      for (i = 0; s1; i ++) {
+	args[i] = strsep(&s1, " ");
+      }
+      transform = make_translate(atoi(args[0]), atoi(args[1]), atoi(args[2]));
+      matrix_mult(transform, edges);
+    }
+
+    else if ( strcmp(line, "rotate") == 0 ){
+    }
+
+    else if ( strcmp(line, "apply") == 0 ){
+    }
+
+    else if ( strcmp(line, "display") == 0 ){
+    }
+
+    else if ( strcmp(line, "save") == 0 ){
+    }
+
+    else if ( strcmp(line, "quit") == 0 ){
+    }
   }
+  free(args);
 }
