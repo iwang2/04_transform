@@ -55,7 +55,6 @@ void draw_lines( struct matrix * points, screen s, color c) {
    printf("Need at least 2 points to draw a line!\n");
    return;
  }
- 
  int point;
  for (point=0; point < points->lastcol-1; point+=2)
    draw_line( points->m[0][point],
@@ -64,14 +63,6 @@ void draw_lines( struct matrix * points, screen s, color c) {
 	      points->m[1][point+1],
 	      s, c);	       
 }// end draw_lines
-
-
-
-
-
-
-
-
 
 void draw_line(int x0, int y0, int x1, int y1, screen s, color c) {
   

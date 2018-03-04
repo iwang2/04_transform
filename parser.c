@@ -91,8 +91,9 @@ void parse_file ( char * filename,
       for (i = 0; s1; i ++) {
 	args[i] = strsep(&s1, " ");
       }
-      transform = make_scale(atoi(args[0]), atoi(args[1]), atoi(args[2]));
-      matrix_mult(transform, edges);
+      struct matrix * scale = make_scale(atoi(args[0]), atoi(args[1]), atoi(args[2]));
+      matrix_mult(scale, transform);
+      free_matrix(scale);
     }
 
     else if ( strcmp(line, "translate") == 0 ){
@@ -101,17 +102,34 @@ void parse_file ( char * filename,
       for (i = 0; s1; i ++) {
 	args[i] = strsep(&s1, " ");
       }
-      transform = make_translate(atoi(args[0]), atoi(args[1]), atoi(args[2]));
-      matrix_mult(transform, edges);
+      struct matrix * move = make_translate(atoi(args[0]), atoi(args[1]), atoi(args[2]));
+      matrix_mult(move, transform);
+      free_matrix(move);
     }
 
     else if ( strcmp(line, "rotate") == 0 ){
+      fgets(line, 255, f);
+      s1 = line;
+      for ( i = 0 ; s1 ; i++ ) {
+	args[i] = strsep(&s1, " ");
+      }
+      struct matrix * rotate;
+      double theta = atoi(args[1]) * M_PI / 180;
+      if ( strcmp(args[0], "x") == 0 ) rotate = make_rotX(theta);
+      else if ( strcmp(args[0], "y") == 0 ) rotate = make_rotY(theta);
+      else if ( strcmp(args[0], "z") == 0 ) rotate = make_rotZ(theta);
     }
 
     else if ( strcmp(line, "apply") == 0 ){
+      matrix_mult(transform, edges);
     }
 
     else if ( strcmp(line, "display") == 0 ){
+      color c;
+      c.blue = 100;
+      c.red = 200;
+      c.green = 30;
+      draw_lines(edges, s, c);
     }
 
     else if ( strcmp(line, "save") == 0 ){
