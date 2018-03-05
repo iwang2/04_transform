@@ -1,0 +1,49 @@
+line
+0 0 0 300 0 0
+line
+300 0 0 300 300 0
+line
+300 300 0 0 300 0
+line
+0 300 0 0 0 0
+ident
+apply
+move
+-250 -250 0
+rotate
+z 10
+move
+250 250 0
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+apply
+display
+save
+pic.png
