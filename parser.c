@@ -23,7 +23,7 @@ The file follows the following format:
      Any command that requires arguments must have those arguments in the second line.
      The commands are as follows:
          line: add a line to the edge matrix - 
-	    takes 6 arguemnts (x0, y0, z0, x1, y1, z1)
+	    takes 6 arguments (x0, y0, z0, x1, y1, z1)
 	 ident: set the transform matrix to the identity matrix - 
 	 scale: create a scale matrix, 
 	    then multiply the transform matrix by the scale matrix - 
@@ -56,12 +56,11 @@ void parse_file ( char * filename,
                   struct matrix * transform, 
                   struct matrix * edges,
                   screen s) {
-
   FILE *f;
   char line[256];
-  char * s1;
-  char ** args = (char **)calloc(6, sizeof(char *));
-  int i;
+  double x0, y0, z0, x1, y1, z1;
+  double theta;
+  char axis;
   clear_screen(s);
 
   if ( strcmp(filename, "stdin") == 0 ) f = stdin;
@@ -72,71 +71,76 @@ void parse_file ( char * filename,
     
     if ( strcmp(line, "line") == 0 ){
       fgets(line, 255, f);
-      s1 = line;
-      for (i = 0; s1; i ++) {
-	args[i] = strsep(&s1, " ");
-      }      
-      add_edge(edges,
-	       atoi(args[0]), atoi(args[1]), atoi(args[2]),
-	       atoi(args[3]), atoi(args[4]), atoi(args[5]));
+      sscanf(line, "%lf %lf %lf %lf %lf %lf",
+	     &x0, &y0, &z0, &x1, &y1, &z1);
+      add_edge(edges, x0, y0, z0, x1, y1, z1);
+      printf("line %s", line);
     }
 
     else if ( strcmp(line, "ident") == 0 ) {
       ident(transform);
+      printf("ident\n");
     }
 
-    else if ( strcmp(line, "scale") ) {
+    else if ( strcmp(line, "scale") == 0 ) {
       fgets(line, 255, f);
-      s1 = line;
-      for (i = 0; s1; i ++) {
-	args[i] = strsep(&s1, " ");
-      }
-      struct matrix * scale = make_scale(atoi(args[0]), atoi(args[1]), atoi(args[2]));
+      sscanf(line, "%lf %lf %lf", &x0, &y0, &z0);
+      
+      struct matrix * scale = make_scale(x0, y0, z0);
       matrix_mult(scale, transform);
       free_matrix(scale);
+      printf("scale: %s", line);
     }
 
-    else if ( strcmp(line, "translate") == 0 ){
+    else if ( strcmp(line, "move") == 0 ){
       fgets(line, 255, f);
-      s1 = line;
-      for (i = 0; s1; i ++) {
-	args[i] = strsep(&s1, " ");
-      }
-      struct matrix * move = make_translate(atoi(args[0]), atoi(args[1]), atoi(args[2]));
+      sscanf(line, "%lf %lf %lf", &x0, &y0, &z0);
+      
+      struct matrix * move = make_translate(x0, y0, z0);
       matrix_mult(move, transform);
       free_matrix(move);
+      printf("move: %s", line);
     }
 
     else if ( strcmp(line, "rotate") == 0 ){
       fgets(line, 255, f);
-      s1 = line;
-      for ( i = 0 ; s1 ; i++ ) {
-	args[i] = strsep(&s1, " ");
-      }
       struct matrix * rotate;
-      double theta = atoi(args[1]) * M_PI / 180;
-      if ( strcmp(args[0], "x") == 0 ) rotate = make_rotX(theta);
-      else if ( strcmp(args[0], "y") == 0 ) rotate = make_rotY(theta);
-      else if ( strcmp(args[0], "z") == 0 ) rotate = make_rotZ(theta);
+      sscanf(line, "%c %lf", &axis, &theta);
+      theta *= M_PI / 180;
+      
+      if (axis == 'x') rotate = make_rotX(theta);
+      else if (axis == 'y') rotate = make_rotY(theta);
+      else if (axis == 'z') rotate = make_rotZ(theta);
+
+      matrix_mult(rotate, transform);
+      free_matrix(rotate);
+      printf("rotate: %s", line);
     }
 
     else if ( strcmp(line, "apply") == 0 ){
       matrix_mult(transform, edges);
+      printf("applied changes\n");
     }
 
     else if ( strcmp(line, "display") == 0 ){
+      clear_screen(s);
       color c;
       c.blue = 100;
       c.red = 200;
       c.green = 30;
       draw_lines(edges, s, c);
+      display(s);
     }
 
     else if ( strcmp(line, "save") == 0 ){
+      fgets(line, 255, f);
+      line[strlen(line)-1] = '\0';
+      save_extension(s, line);
+      printf("saved\n");
     }
 
     else if ( strcmp(line, "quit") == 0 ){
+      exit(0);
     }
   }
-  free(args);
 }
